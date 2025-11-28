@@ -1,3 +1,14 @@
+import sys
+import os
+
+# ===== FIX PATH CHO PYINSTALLER - PHẢI Ở ĐẦU FILE =====
+if getattr(sys, 'frozen', False):
+    # Đang chạy từ file .exe
+    base_path = sys._MEIPASS
+else:
+    # Đang chạy code Python bình thường
+    base_path = os.path.abspath(".")
+
 from flask import Flask, render_template, request, jsonify, send_file
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -9,12 +20,21 @@ from selenium.webdriver.chrome.service import Service
 from webdriver_manager.chrome import ChromeDriverManager
 import time
 import threading
-import os
 import pandas as pd
 from werkzeug.utils import secure_filename
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
+# Khởi tạo Flask với đường dẫn templates và static cố định
+app = Flask(__name__,
+            template_folder=os.path.join(base_path, 'templates'),
+            static_folder=os.path.join(base_path, 'static'))
+
+# Cấu hình upload folder (tạo trong thư mục tạm khi chạy .exe)
+if getattr(sys, 'frozen', False):
+    upload_folder = os.path.join(os.path.dirname(sys.executable), 'uploads')
+else:
+    upload_folder = os.path.join(base_path, 'uploads')
+
+app.config['UPLOAD_FOLDER'] = upload_folder
 app.config['ALLOWED_EXTENSIONS'] = {'xlsx', 'xls'}
 
 # Create uploads directory if it doesn't exist
@@ -238,6 +258,7 @@ class ZaloAutoSender:
                                                            "div.send-msg-btn, button.send-msg-btn, [title*='Gửi'], [title*='Send']")
 
                     # Di chuyển chuột đến nút và click
+                    actions = ActionChains(self.driver)
                     actions.move_to_element(send_button).click().perform()
                     time.sleep(1)
 
