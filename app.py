@@ -53,16 +53,81 @@ class ZaloAutoSender:
 
     def khoi_tao_driver(self):
         """Khởi tạo Chrome driver với webdriver-manager"""
-        options = webdriver.ChromeOptions()
-        options.add_argument('--start-maximized')
-        # Thêm options để tránh bị phát hiện là bot
-        options.add_experimental_option("excludeSwitches", ["enable-automation"])
-        options.add_experimental_option('useAutomationExtension', False)
+        try:
+            print("\n" + "=" * 60)
+            print("ĐANG KHỞI TẠO TRÌNH DUYỆT...")
+            print("=" * 60)
 
-        # Sử dụng webdriver-manager để tự động tải ChromeDriver
-        service = Service(ChromeDriverManager().install())
-        self.driver = webdriver.Chrome(service=service, options=options)
-        self.wait = WebDriverWait(self.driver, 20)
+            options = webdriver.ChromeOptions()
+
+            # Tìm Chrome đã cài sẵn trên máy
+            chrome_paths = [
+                r"C:\Program Files\Google\Chrome\Application\chrome.exe",
+                r"C:\Program Files (x86)\Google\Chrome\Application\chrome.exe",
+            ]
+
+            chrome_found = False
+            for chrome_path in chrome_paths:
+                if os.path.exists(chrome_path):
+                    options.binary_location = chrome_path
+                    chrome_found = True
+                    print(f"✓ Tìm thấy Chrome tại: {chrome_path}")
+                    break
+
+            if not chrome_found:
+                print("⚠️ Không tìm thấy Chrome. Sử dụng Chrome mặc định...")
+
+            # Các argument cơ bản
+            options.add_argument('--start-maximized')
+            options.add_argument('--no-sandbox')
+            options.add_argument('--disable-dev-shm-usage')
+            options.add_argument('--disable-gpu')
+            options.add_argument('--disable-blink-features=AutomationControlled')
+
+            # Tắt các cảnh báo
+            options.add_argument('--disable-logging')
+            options.add_argument('--log-level=3')
+            options.add_argument('--silent')
+
+            # Thêm options để tránh bị phát hiện là bot
+            options.add_experimental_option("excludeSwitches", ["enable-automation", "enable-logging"])
+            options.add_experimental_option('useAutomationExtension', False)
+
+            # Tắt các thông báo không cần thiết
+            prefs = {
+                "profile.default_content_setting_values.notifications": 2,
+                "profile.default_content_settings.popups": 0,
+            }
+            options.add_experimental_option("prefs", prefs)
+
+            print("\n📥 Đang tải ChromeDriver...")
+            print("⏳ Lần đầu tiên có thể mất 30-60 giây để tải driver...")
+
+            # Sử dụng webdriver-manager để tự động tải ChromeDriver
+            service = Service(ChromeDriverManager().install())
+            print("✓ Đã tải ChromeDriver thành công!")
+
+            print("\n🚀 Đang khởi động Google Chrome...")
+            self.driver = webdriver.Chrome(service=service, options=options)
+            self.wait = WebDriverWait(self.driver, 20)
+
+            print("✓ Đã khởi động Chrome thành công!")
+            print("=" * 60 + "\n")
+
+        except Exception as e:
+            print("\n" + "=" * 60)
+            print("❌ LỖI KHI KHỞI TẠO CHROME")
+            print("=" * 60)
+            print(f"Chi tiết lỗi: {str(e)}")
+            print("\n⚠️ CÁCH KHẮC PHỤC:")
+            print("1. Đảm bảo đã cài Google Chrome trên máy")
+            print("2. Kiểm tra kết nối Internet")
+            print("3. Tắt Antivirus/Windows Defender tạm thời")
+            print("4. Chạy file .exe với quyền Administrator")
+            print("5. Nếu vẫn lỗi, chạy bằng Python thay vì .exe:")
+            print("   python app.py")
+            print("=" * 60 + "\n")
+            raise
 
     def dang_nhap_zalo(self):
         """Mở Zalo Web và chờ đăng nhập"""
@@ -461,9 +526,9 @@ def gui_tin_nhan_route():
                     else:
                         print(f"✗ Không thể gửi tin nhắn đến {so_dien_thoai}")
 
-                    # Đợi 1 phút trước khi gửi tin nhắn tiếp theo
-                    print("Đợi 1 phút trước khi gửi tin nhắn tiếp theo...")
-                    time.sleep(60)
+                    # Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo
+                    print("Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo...")
+                    time.sleep(303)  # 5 phút * 60 giây + 3 giây = 303 giây
 
                 except Exception as e:
                     print(f"Lỗi khi gửi tin nhắn đến {so_dien_thoai}: {str(e)}")
