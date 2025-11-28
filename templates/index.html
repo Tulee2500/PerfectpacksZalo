@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gửi Tin Nhắn Zalo Tự Động</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #667eea;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            color: #333;
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        input[type="text"],
+        textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 14px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+
+        input[type="text"]:focus,
+        textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 150px;
+            line-height: 1.5;
+        }
+
+        .phone-inputs {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .file-upload {
+            position: relative;
+            margin-bottom: 10px;
+        }
+        
+        .file-upload input[type="file"] {
+            display: none;
+        }
+        
+        .file-upload-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 15px;
+            background: #f0f0f0;
+            border: 2px dashed #ccc;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .file-upload-btn:hover {
+            background: #e0e0e0;
+            border-color: #999;
+        }
+        
+        .file-info {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+        
+        .phone-list {
+            max-height: 150px;
+            overflow-y: auto;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 10px;
+            background: #f9f9f9;
+            margin-top: 10px;
+        }
+        
+        .phone-item {
+            padding: 5px 0;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .phone-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-submit {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-submit:active {
+            transform: translateY(0);
+        }
+
+        .btn-submit:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .note {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 10px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #856404;
+            line-height: 1.6;
+        }
+
+        .note strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .note ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .note li {
+            padding: 3px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .note li:before {
+            content: "•";
+            position: absolute;
+            left: 5px;
+        }
+
+        @media (max-width: 600px) {
+            .phone-inputs {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 25px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎊 Gửi Tin Nhắn Zalo Tự Động</h1>
+            <p>Gửi cùng lúc nhiều số điện thoại với 1 mẫu tin</p>
+        </div>
+
+        <div id="alert" class="alert"></div>
+
+        <form id="messageForm">
+            <div class="form-group">
+                <label for="phoneNumbers">Nhập số điện thoại (cách nhau bằng dấu phẩy hoặc xuống dòng):</label>
+                <textarea id="phoneNumbers" placeholder="Ví dụ: 0912345678, 0987654321"></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label>Hoặc tải lên file Excel chứa số điện thoại:</label>
+                <div class="file-upload">
+                    <input type="file" id="excelFile" accept=".xlsx, .xls">
+                    <label for="excelFile" class="file-upload-btn">
+                        <span id="fileName">Chọn file Excel</span>
+                        <i class="fas fa-upload"></i>
+                    </label>
+                </div>
+                <div id="fileInfo" class="file-info"></div>
+            </div>
+            
+            <div class="form-group" id="phoneListContainer" style="display: none;">
+                <label>Danh sách số điện thoại sẽ gửi:</label>
+                <div id="phoneList" class="phone-list"></div>
+            </div>
+
+            <div class="form-group">
+                <label>💬 Nội dung tin nhắn</label>
+                <textarea id="noiDung" placeholder="Nhập nội dung tin nhắn chúc mừng năm mới...">🎊 Chúc Mừng Năm Mới 2025! 🎊
+
+🎉 Chúc bạn và gia đình một năm mới an khang thịnh vượng
+💰 Tài lộc dồi dào, công việc thuận lợi
+❤️ Sức khỏe dồi dào, hạnh phúc tràn đầy
+🌟 Mọi điều ước đều thành hiện thực!
+
+Năm mới vui vẻ! 🥳</textarea>
+            </div>
+
+            <button type="submit" class="btn-submit" id="btnSubmit">
+                🚀 Gửi Tin Nhắn
+            </button>
+        </form>
+
+        <div class="note">
+            <strong>📌 Lưu ý:</strong>
+            <ul>
+                <li>Nhập ít nhất 1 số điện thoại</li>
+                <li>Sau khi nhấn nút, trình duyệt sẽ mở Zalo Web</li>
+                <li>Bạn cần đăng nhập Zalo bằng QR code</li>
+                <li>Chương trình sẽ tự động gửi tin sau khi đăng nhập</li>
+                <li>Trình duyệt sẽ tự đóng sau khi gửi xong</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        const form = document.getElementById('messageForm');
+        const alert = document.getElementById('alert');
+        const btnSubmit = document.getElementById('btnSubmit');
+
+        function showAlert(message, type) {
+            alert.textContent = message;
+            alert.className = 'alert alert-' + type;
+            alert.style.display = 'block';
+
+            setTimeout(() => {
+                alert.style.display = 'none';
+            }, 5000);
+        }
+
+        const excelFile = document.getElementById('excelFile');
+        const phoneNumbersInput = document.getElementById('phoneNumbers');
+        const fileInfo = document.getElementById('fileInfo');
+        const phoneListContainer = document.getElementById('phoneListContainer');
+        const phoneList = document.getElementById('phoneList');
+        
+        let phoneNumbers = [];
+        
+        // Xử lý khi chọn file Excel
+        excelFile.addEventListener('change', async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const formData = new FormData();
+            formData.append('file', file);
+            
+            try {
+                const response = await fetch('/upload-excel', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    phoneNumbers = data.phone_numbers;
+                    updatePhoneList();
+                    fileInfo.textContent = `Đã tải lên thành công: ${file.name} (${data.count} số)`;
+                    fileInfo.style.color = '#28a745';
+                    phoneNumbersInput.value = phoneNumbers.join('\n');
+                } else {
+                    fileInfo.textContent = data.message || 'Có lỗi khi đọc file Excel';
+                    fileInfo.style.color = '#dc3545';
+                }
+            } catch (error) {
+                console.error('Lỗi khi tải lên file:', error);
+                fileInfo.textContent = 'Có lỗi xảy ra khi tải lên file';
+                fileInfo.style.color = '#dc3545';
+            }
+        });
+        
+        // Cập nhật danh sách số điện thoại từ textarea
+        phoneNumbersInput.addEventListener('input', (e) => {
+            const text = e.target.value;
+            // Tách số điện thoại từ text (hỗ trợ cả dấu phẩy, chấm phẩy, xuống dòng)
+            phoneNumbers = text
+                .split(/[,\n;]+/)
+                .map(num => num.trim())
+                .filter(num => {
+                    // Lọc ra các số điện thoại hợp lệ (chỉ chứa số, ít nhất 8 chữ số)
+                    const digits = num.replace(/\D/g, '');
+                    return digits.length >= 8;
+                });
+                
+            updatePhoneList();
+        });
+        
+        // Cập nhật hiển thị danh sách số điện thoại
+        function updatePhoneList() {
+            phoneList.innerHTML = '';
+            
+            if (phoneNumbers.length === 0) {
+                phoneListContainer.style.display = 'none';
+                return;
+            }
+            
+            phoneNumbers.forEach((phone, index) => {
+                const phoneItem = document.createElement('div');
+                phoneItem.className = 'phone-item';
+                phoneItem.innerHTML = `
+                    <span>${index + 1}. ${phone}</span>
+                    <span class="remove-phone" data-index="${index}">×</span>
+                `;
+                phoneList.appendChild(phoneItem);
+            });
+            
+            // Thêm sự kiện xóa số
+            document.querySelectorAll('.remove-phone').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const index = parseInt(e.target.getAttribute('data-index'));
+                    phoneNumbers.splice(index, 1);
+                    updatePhoneList();
+                    // Cập nhật lại textarea
+                    phoneNumbersInput.value = phoneNumbers.join('\n');
+                });
+            });
+            
+            phoneListContainer.style.display = 'block';
+        }
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const noiDung = document.getElementById('noiDung').value.trim();
+            
+            // Kiểm tra dữ liệu trước khi gửi
+            console.log('Danh sách số:', phoneNumbers);  // Kiểm tra dữ liệu
+            console.log('Nội dung:', noiDung);          // Kiểm tra nội dung
+            console.log('Độ dài danh sách:', phoneNumbers.length);
+            console.log('Độ dài nội dung:', noiDung.length);
+
+            if (phoneNumbers.length === 0) {
+                showAlert('Vui lòng nhập ít nhất một số điện thoại', 'error');
+                console.error('Lỗi: Không có số điện thoại nào trong danh sách');
+                return;
+            }
+
+            if (!noiDung || noiDung.trim().length === 0) {
+                showAlert('Vui lòng nhập nội dung tin nhắn', 'error');
+                console.error('Lỗi: Nội dung tin nhắn rỗng');
+                return;
+            }
+
+            // Vô hiệu hóa nút gửi
+            btnSubmit.disabled = true;
+            btnSubmit.innerHTML = '🔄 Đang gửi...';
+
+            try {
+                console.log('Đang gửi dữ liệu:', {
+                    danh_sach_so: phoneNumbers,
+                    noi_dung: noiDung
+                });
+
+                const response = await fetch('/gui-tin-nhan', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        danh_sach_so: phoneNumbers,
+                        noi_dung: noiDung
+                    })
+                });
+
+                console.log('Phản hồi từ server:', response);  // Log phản hồi
+
+                const data = await response.json();
+                console.log('Dữ liệu phản hồi:', data);  // Log dữ liệu phản hồi
+                
+                if (data.success) {
+                    showAlert('Đã bắt đầu gửi tin nhắn! Vui lòng đợi...', 'success');
+                } else {
+                    throw new Error(data.message || 'Có lỗi xảy ra khi gửi tin nhắn');
+                }
+            } catch (error) {
+                console.error('Lỗi khi gửi tin nhắn:', error);
+                showAlert(`Lỗi: ${error.message}`, 'error');
+                btnSubmit.disabled = false;
+                btnSubmit.innerHTML = '🚀 Gửi Tin Nhắn';
+            }
+        }); 
+    </script>
+</body>
+</html>
