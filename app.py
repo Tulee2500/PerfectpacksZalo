@@ -493,16 +493,37 @@ def gui_tin_nhan_route():
     data = request.json
     print(f"Dữ liệu nhận được từ frontend: {data}")  # Debug log
     danh_sach_so = data.get('danh_sach_so', [])
-    noi_dung = data.get('noi_dung')
-    print(f"Danh sách số: {danh_sach_so}")
-    print(f"Nội dung: '{noi_dung}'")
-    print(f"Kiểm tra danh_sách_số: {bool(danh_sach_so)}")
-    print(f"Kiểm tra nội_dung: {bool(noi_dung)}")
+    content_type = data.get('content_type', 'single')
 
-    if not danh_sach_so or not noi_dung:
+    if content_type == 'single':
+        noi_dung = data.get('noi_dung')
+        noi_dung_nhieu = None
+    else:
+        noi_dung = None
+        noi_dung_nhieu = data.get('noi_dung_nhieu')
+
+    print(f"Danh sách số: {danh_sach_so}")
+    print(f"Loại nội dung: {content_type}")
+    print(f"Nội dung đơn: '{noi_dung}'")
+    print(f"Nội dung nhiều: '{noi_dung_nhieu}'")
+    print(f"Kiểm tra danh_sách_số: {bool(danh_sach_so)}")
+
+    if not danh_sach_so:
         return jsonify({
             'success': False,
-            'message': f'Vui lòng nhập đầy đủ danh sách số điện thoại và nội dung tin nhắn. Danh sách: {len(danh_sach_so)} số, Nội dung: {len(noi_dung) if noi_dung else 0} ký tự'
+            'message': f'Vui lòng nhập đầy đủ danh sách số điện thoại. Danh sách: {len(danh_sach_so)} số'
+        }), 400
+
+    if content_type == 'single' and not noi_dung:
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng nhập nội dung tin nhắn'
+        }), 400
+
+    if content_type == 'multiple' and not noi_dung_nhieu:
+        return jsonify({
+            'success': False,
+            'message': 'Vui lòng nhập nội dung tin nhắn'
         }), 400
 
     def xu_ly_gui_tin():
@@ -515,24 +536,64 @@ def gui_tin_nhan_route():
                 zalo_sender.dang_nhap_zalo()
                 browser_open = True
 
-            # Gửi tin nhắn đến từng số điện thoại
-            for so_dien_thoai in danh_sach_so:
-                try:
-                    print(f"\nĐang gửi tin nhắn đến {so_dien_thoai}...")
-                    thanh_cong = zalo_sender.gui_tin_nhan(so_dien_thoai, noi_dung)
+            # Xử lý nội dung gửi
+            if content_type == 'single':
+                # Gửi cùng một nội dung cho tất cả các số
+                for so_dien_thoai in danh_sach_so:
+                    try:
+                        print(f"\nĐang gửi tin nhắn đến {so_dien_thoai}...")
+                        thanh_cong = zalo_sender.gui_tin_nhan(so_dien_thoai, noi_dung)
 
-                    if thanh_cong:
-                        print(f"✓ Đã gửi tin nhắn thành công đến {so_dien_thoai}")
-                    else:
-                        print(f"✗ Không thể gửi tin nhắn đến {so_dien_thoai}")
+                        if thanh_cong:
+                            print(f"✓ Đã gửi tin nhắn thành công đến {so_dien_thoai}")
+                        else:
+                            print(f"✗ Không thể gửi tin nhắn đến {so_dien_thoai}")
 
-                    # Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo
-                    print("Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo...")
-                    time.sleep(303)  # 5 phút * 60 giây + 3 giây = 303 giây
+                        # Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo
+                        print("Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo...")
+                        time.sleep(303)  # 5 phút * 60 giây + 3 giây = 303 giây
 
-                except Exception as e:
-                    print(f"Lỗi khi gửi tin nhắn đến {so_dien_thoai}: {str(e)}")
-                    continue
+                    except Exception as e:
+                        print(f"Lỗi khi gửi tin nhắn đến {so_dien_thoai}: {str(e)}")
+                        continue
+            else:
+                # Tách các nội dung từ chuỗi (dùng separator đặc biệt để tránh nhầm với xuống dòng trong nội dung)
+                danh_sach_noi_dung = [nd.strip() for nd in noi_dung_nhieu.split('\n---SEPARATOR---\n') if nd.strip()]
+                
+                # Debug: In ra chuỗi nhận được và danh sách sau khi tách
+                print(f"🔍 Chuỗi nhận được từ frontend: '{repr(noi_dung_nhieu)}'")
+                print(f"🔍 Danh sách sau khi tách: {danh_sach_noi_dung}")
+                
+                if not danh_sach_noi_dung:
+                    print("❌ Không có nội dung hợp lệ để gửi")
+                    return
+
+                print(f"📝 Có {len(danh_sach_noi_dung)} nội dung để gửi xen kẽ")
+                print(f"📱 Có {len(danh_sach_so)} số điện thoại")
+
+                # Gửi nội dung xen kẽ
+                for index, so_dien_thoai in enumerate(danh_sach_so):
+                    try:
+                        # Chọn nội dung theo vòng lặp (index % len(danh_sach_noi_dung))
+                        noi_dung_hien_tai = danh_sach_noi_dung[index % len(danh_sach_noi_dung)]
+
+                        print(f"\n--- Đang gửi tin cho số: {so_dien_thoai} ---")
+                        print(f"--- Nội dung thứ {index % len(danh_sach_noi_dung) + 1}: {noi_dung_hien_tai[:50]}... ---")
+
+                        thanh_cong = zalo_sender.gui_tin_nhan(so_dien_thoai, noi_dung_hien_tai)
+
+                        if thanh_cong:
+                            print(f"✓ Đã gửi tin nhắn thành công đến {so_dien_thoai}")
+                        else:
+                            print(f"✗ Không thể gửi tin nhắn đến {so_dien_thoai}")
+
+                        # Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo
+                        print("Đợi 5 phút 3 giây trước khi gửi tin nhắn tiếp theo...")
+                        time.sleep(303)  # 5 phút * 60 giây + 3 giây = 303 giây
+
+                    except Exception as e:
+                        print(f"Lỗi khi gửi tin nhắn đến {so_dien_thoai}: {str(e)}")
+                        continue
 
             # Đóng trình duyệt sau khi gửi xong tất cả
             print("\nĐã gửi xong tất cả tin nhắn. Đóng trình duyệt...")

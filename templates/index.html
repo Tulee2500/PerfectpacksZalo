@@ -94,6 +94,13 @@
             min-height: 150px;
             line-height: 1.5;
         }
+        
+        .content-textarea {
+            resize: vertical;
+            min-height: 120px !important;
+            line-height: 1.6;
+            font-size: 13px;
+        }
 
         .phone-inputs {
             display: grid;
@@ -296,14 +303,88 @@
 
             <div class="form-group">
                 <label>💬 Nội dung tin nhắn</label>
-                <textarea id="noiDung" placeholder="Nhập nội dung tin nhắn chúc mừng năm mới...">🎊 Chúc Mừng Năm Mới 2025! 🎊
+                <div id="contentModeSelector">
+                    <label style="margin-bottom: 10px; display: block;">
+                        <input type="radio" name="contentType" value="single" checked onchange="toggleContentType()">
+                        Gửi 1 nội dung cho tất cả
+                    </label>
+                    <label style="margin-bottom: 15px; display: block;">
+                        <input type="radio" name="contentType" value="multiple" onchange="toggleContentType()">
+                        Gửi nhiều nội dung xen kẽ
+                    </label>
+                </div>
+                
+                <div id="singleContent">
+                    <textarea id="noiDung" placeholder="Nhập nội dung tin nhắn giới thiệu doanh nghiệp...">🚀 PERFECTPACKS: Giải Pháp Toàn Diện (In Ấn & Văn Phòng Phẩm)
 
-🎉 Chúc bạn và gia đình một năm mới an khang thịnh vượng
-💰 Tài lộc dồi dào, công việc thuận lợi
-❤️ Sức khỏe dồi dào, hạnh phúc tràn đầy
-🌟 Mọi điều ước đều thành hiện thực!
+Kính gửi Quý Khách hàng/Quý Đối tác,
+Chúng tôi chuyên cung cấp dịch vụ Thiết kế & In ấn CHUYÊN NGHIỆP và CUNG CẤP VĂN PHÒNG PHẨM trọn gói.
 
-Năm mới vui vẻ! 🥳</textarea>
+Chúng tôi cam kết chất lượng hoàn thiện tuyệt đối cho mọi nhu cầu của doanh nghiệp:
+
+� CHẤT LƯỢNG IN ẤN CAO CẤP:
+• Catalogue, Hồ sơ năng lực, Tờ rơi, Card visit
+• Bao bì thương hiệu: Túi giấy, Hộp carton lạnh (Hộp cứng), Tem nhãn
+• Quà tặng: Sổ da, Lịch Tết
+
+📦 CUNG CẤP VĂN PHÒNG PHẨM:
+• Đầy đủ các vật dụng thiết yếu cho văn phòng
+• Hóa đơn VAT đầy đủ
+• Giao hàng ngay trong ngày
+
+📞 Liên Hệ Ngay (Gửi ảnh mẫu/Báo giá)
+Công ty TNHH Perfectpacks
+Hotline (Zalo): 0982704995
+Địa chỉ: 85tt3, Khu đô thị Văn Phú, Hà Đông, Hà Nội
+
+Rất mong được hợp tác để cung cấp các giải pháp tiện lợi và chất lượng nhất cho Quý vị!</textarea>
+                </div>
+                
+                <div id="multipleContent" style="display: none;">
+                    <p style="margin-bottom: 10px; font-size: 13px; color: #666;">
+                        Nhập nhiều nội dung, mỗi nội dung trên một dòng. Hệ thống sẽ gửi xen kẽ:
+                        nội dung 1 cho số 1, nội dung 2 cho số 2, nội dung 1 cho số 3, nội dung 2 cho số 4...
+                    </p>
+                    
+                    <div id="contentList">
+                        <div class="content-item" style="margin-bottom: 10px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <span style="font-weight: bold; min-width: 80px; margin-top: 12px;">Nội dung 1:</span>
+                                <textarea class="content-textarea" style="flex: 1;" placeholder="Nhập nội dung 1...">🚀 PERFECTPACKS: Giải Pháp In Ấn Chuyên Nghiệp!
+
+Kính gửi Quý Khách hàng,
+Chúng tôi chuyên cung cấp dịch vụ Thiết kế & In ấn CHUYÊN NGHIỆP:
+• Catalogue, Hồ sơ năng lực, Tờ rơi, Card visit
+• Bao bì thương hiệu: Túi giấy, Hộp carton lạnh, Tem nhãn
+• Quà tặng: Sổ da, Lịch Tết
+
+Cam kết chất lượng hoàn thiện tuyệt đối!
+📞 Hotline: 0982704995</textarea>
+                                <button type="button" class="btn-remove-content" onclick="removeContent(this)" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 5px;">×</button>
+                            </div>
+                        </div>
+                        <div class="content-item" style="margin-bottom: 10px;">
+                            <div style="display: flex; align-items: flex-start; gap: 10px;">
+                                <span style="font-weight: bold; min-width: 80px; margin-top: 12px;">Nội dung 2:</span>
+                                <textarea class="content-textarea" style="flex: 1;" placeholder="Nhập nội dung 2...">📦 PERFECTPACKS: Cung Cấp Văn Phòng Phẩm Trọn Gói!
+
+Kính gửi Quý Đối tác,
+Chúng tôi chuyên CUNG CẤP VĂN PHÒNG PHẨM trọn gói:
+• Đầy đủ các vật dụng thiết yếu cho văn phòng
+• Hóa đơn VAT đầy đủ
+• Giao hàng ngay trong ngày
+
+Giải pháp tiện lợi và chất lượng nhất cho doanh nghiệp!
+📍 Địa chỉ: 85tt3, Khu đô thị Văn Phú, Hà Đông, Hà Nội</textarea>
+                                <button type="button" class="btn-remove-content" onclick="removeContent(this)" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; margin-top: 5px;">×</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button type="button" id="btnAddContent" onclick="addContent()" style="background: #28a745; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; margin-top: 10px;">
+                        ➕ Thêm nội dung
+                    </button>
+                </div>
             </div>
 
             <button type="submit" class="btn-submit" id="btnSubmit">
@@ -428,16 +509,103 @@ Năm mới vui vẻ! 🥳</textarea>
             phoneListContainer.style.display = 'block';
         }
         
+        // Biến đếm số lượng nội dung
+        let contentCount = 2;
+        
+        // Hàm thêm nội dung mới
+        function addContent() {
+            contentCount++;
+            const contentList = document.getElementById('contentList');
+            
+            const newContentItem = document.createElement('div');
+            newContentItem.className = 'content-item';
+            newContentItem.style.marginBottom = '10px';
+            newContentItem.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <span style="font-weight: bold; min-width: 80px;">Nội dung ${contentCount}:</span>
+                    <textarea class="content-textarea" style="flex: 1; min-height: 60px;" placeholder="Nhập nội dung ${contentCount}..."></textarea>
+                    <button type="button" class="btn-remove-content" onclick="removeContent(this)" style="background: #dc3545; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;">×</button>
+                </div>
+            `;
+            
+            contentList.appendChild(newContentItem);
+            updateContentNumbers();
+        }
+        
+        // Hàm xóa nội dung
+        function removeContent(button) {
+            const contentItems = document.querySelectorAll('.content-item');
+            if (contentItems.length <= 1) {
+                showAlert('Phải có ít nhất 1 nội dung', 'error');
+                return;
+            }
+            
+            button.closest('.content-item').remove();
+            updateContentNumbers();
+        }
+        
+        // Hàm cập nhật số thứ tự nội dung
+        function updateContentNumbers() {
+            const contentItems = document.querySelectorAll('.content-item');
+            contentItems.forEach((item, index) => {
+                const label = item.querySelector('span');
+                const textarea = item.querySelector('textarea');
+                label.textContent = `Nội dung ${index + 1}:`;
+                textarea.placeholder = `Nhập nội dung ${index + 1}...`;
+            });
+            contentCount = contentItems.length;
+        }
+        
+        // Hàm thu thập nội dung từ các textarea
+        function getMultipleContents() {
+            const textareas = document.querySelectorAll('.content-textarea');
+            const contents = [];
+            textareas.forEach(textarea => {
+                const content = textarea.value.trim();
+                if (content) {
+                    contents.push(content);
+                }
+            });
+            console.log('🔍 Frontend - Danh sách nội dung thu thập được:', contents);
+            console.log('🔍 Frontend - Chuỗi sẽ gửi:', contents.join('\n---SEPARATOR---\n'));
+            return contents.join('\n---SEPARATOR---\n');
+        }
+        
+        // Hàm chuyển đổi giữa 1 nội dung và nhiều nội dung
+        function toggleContentType() {
+            const contentType = document.querySelector('input[name="contentType"]:checked').value;
+            const singleContent = document.getElementById('singleContent');
+            const multipleContent = document.getElementById('multipleContent');
+            
+            if (contentType === 'single') {
+                singleContent.style.display = 'block';
+                multipleContent.style.display = 'none';
+            } else {
+                singleContent.style.display = 'none';
+                multipleContent.style.display = 'block';
+            }
+        }
+        
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
-            const noiDung = document.getElementById('noiDung').value.trim();
+            const contentType = document.querySelector('input[name="contentType"]:checked').value;
+            let noiDung, noiDungNhieu;
+            
+            if (contentType === 'single') {
+                noiDung = document.getElementById('noiDung').value.trim();
+                noiDungNhieu = null;
+            } else {
+                noiDung = null;
+                noiDungNhieu = getMultipleContents();
+            }
             
             // Kiểm tra dữ liệu trước khi gửi
-            console.log('Danh sách số:', phoneNumbers);  // Kiểm tra dữ liệu
-            console.log('Nội dung:', noiDung);          // Kiểm tra nội dung
+            console.log('Danh sách số:', phoneNumbers);
+            console.log('Loại nội dung:', contentType);
+            console.log('Nội dung đơn:', noiDung);
+            console.log('Nội dung nhiều:', noiDungNhieu);
             console.log('Độ dài danh sách:', phoneNumbers.length);
-            console.log('Độ dài nội dung:', noiDung.length);
 
             if (phoneNumbers.length === 0) {
                 showAlert('Vui lòng nhập ít nhất một số điện thoại', 'error');
@@ -445,7 +613,13 @@ Năm mới vui vẻ! 🥳</textarea>
                 return;
             }
 
-            if (!noiDung || noiDung.trim().length === 0) {
+            if (contentType === 'single' && (!noiDung || noiDung.trim().length === 0)) {
+                showAlert('Vui lòng nhập nội dung tin nhắn', 'error');
+                console.error('Lỗi: Nội dung tin nhắn rỗng');
+                return;
+            }
+
+            if (contentType === 'multiple' && (!noiDungNhieu || noiDungNhieu.trim().length === 0)) {
                 showAlert('Vui lòng nhập nội dung tin nhắn', 'error');
                 console.error('Lỗi: Nội dung tin nhắn rỗng');
                 return;
@@ -456,26 +630,31 @@ Năm mới vui vẻ! 🥳</textarea>
             btnSubmit.innerHTML = '🔄 Đang gửi...';
 
             try {
-                console.log('Đang gửi dữ liệu:', {
+                const payload = {
                     danh_sach_so: phoneNumbers,
-                    noi_dung: noiDung
-                });
+                    content_type: contentType
+                };
+                
+                if (contentType === 'single') {
+                    payload.noi_dung = noiDung;
+                } else {
+                    payload.noi_dung_nhieu = noiDungNhieu;
+                }
+
+                console.log('Đang gửi dữ liệu:', payload);
 
                 const response = await fetch('/gui-tin-nhan', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({
-                        danh_sach_so: phoneNumbers,
-                        noi_dung: noiDung
-                    })
+                    body: JSON.stringify(payload)
                 });
 
-                console.log('Phản hồi từ server:', response);  // Log phản hồi
+                console.log('Phản hồi từ server:', response);
 
                 const data = await response.json();
-                console.log('Dữ liệu phản hồi:', data);  // Log dữ liệu phản hồi
+                console.log('Dữ liệu phản hồi:', data);
                 
                 if (data.success) {
                     showAlert('Đã bắt đầu gửi tin nhắn! Vui lòng đợi...', 'success');
