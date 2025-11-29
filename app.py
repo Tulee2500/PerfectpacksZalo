@@ -568,17 +568,21 @@ def gui_tin_nhan_route():
                     print("❌ Không có nội dung hợp lệ để gửi")
                     return
 
-                print(f"📝 Có {len(danh_sach_noi_dung)} nội dung để gửi xen kẽ")
+                print(f"📝 Có {len(danh_sach_noi_dung)} nội dung để gửi")
                 print(f"📱 Có {len(danh_sach_so)} số điện thoại")
 
-                # Gửi nội dung xen kẽ
+                # Gửi nội dung theo nguyên tắc 1 nội dung - 1 số điện thoại
+                # Lặp lại danh sách nội dung nếu cần để đủ cho tất cả số điện thoại
+                so_lan_lap = (len(danh_sach_so) // len(danh_sach_noi_dung)) + 1
+                danh_sach_noi_dung_mo_rong = danh_sach_noi_dung * so_lan_lap
+                
                 for index, so_dien_thoai in enumerate(danh_sach_so):
                     try:
-                        # Chọn nội dung theo vòng lặp (index % len(danh_sach_noi_dung))
-                        noi_dung_hien_tai = danh_sach_noi_dung[index % len(danh_sach_noi_dung)]
+                        # Chọn nội dung tương ứng với index (không dùng modulo)
+                        noi_dung_hien_tai = danh_sach_noi_dung_mo_rong[index]
 
                         print(f"\n--- Đang gửi tin cho số: {so_dien_thoai} ---")
-                        print(f"--- Nội dung thứ {index % len(danh_sach_noi_dung) + 1}: {noi_dung_hien_tai[:50]}... ---")
+                        print(f"--- Nội dung thứ {index + 1}: {noi_dung_hien_tai[:50]}... ---")
 
                         thanh_cong = zalo_sender.gui_tin_nhan(so_dien_thoai, noi_dung_hien_tai)
 
